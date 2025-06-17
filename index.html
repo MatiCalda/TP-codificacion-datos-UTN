@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es"></html>
+<head>
+    <title> Trabajo Integrador</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="estilo.css">
+    <script src="scripts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1> CODIFICACION DE DATOS </h1>
+    <div id="cargar">
+        <div id="cargartexto"> <br><br>
+           <label for="textoIng"> <b>INGRESAR TEXTO</b></label> <br><br>
+           <input type="text" id="textoIng"> <br><br>
+        </div>
+        <div id="archivotexto">
+            <label for="file"> <b>INGRESAR UN ARCHIVO DE TEXTO</b> </label> <br>
+            <input type="file" id="file"> <br>
+            <img src="imagen.png"> <br>
+        </div>
+    </div>
+    <div id="contboton">
+        <button id="botontexto" onclick="cargarTexto()"> Cargar Texto </button>
+    </div>
+
+    <div id="resultados">
+
+        <h2> Resultados </h2>
+ 
+        <h4> Calculo de frecuencia de símbolos :</h4>
+        <button id="calcularfrecuencias" onclick="calcularFrecuencias()"> Calcular </button>
+        
+        <div id="frecuencias"></div>
+            <canvas id="grafico-frecuencias" width="30" height="10" style="display: block; box-sizing: border-box; height: 313px; width: 626px;"></canvas>
+            <div id="tabla-simbolos"></div>
+            <canvas id="grafico-codigos"></canvas>
+        <br><br>
+
+        <div id="algoritmos">
+        <div>
+            <h4> Codificacion Shannon-Fano </h4>
+            <p> Tasa de compresión:</p>
+            <p> Eficiencia: </p>
+            <p> Longitud promedio de Código: </p>   
+        </div>
+        <div>
+            <h4> Algoritmo de Huffman </h4>
+            <p> Tasa de compresión:</p>
+            <p> Eficiencia: </p>
+            <p> Longitud promedio de Código: </p>
+        </div> 
+    </div>
+</body>
+</html>

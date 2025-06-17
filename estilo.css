@@ -6,6 +6,13 @@ h1 {
     text-align: center;
 }
 
+#cargar {
+    display: flex;
+    gap: 7em;
+    justify-content: center;
+    margin-top: 2em;
+}
+
 #cargartexto {
     display: flex;
     flex-direction: column;
@@ -14,7 +21,6 @@ h1 {
     width: 10em;
     padding: 3em;
 }
-
 #archivotexto {
     display: flex;
     flex-direction: column;
@@ -23,14 +29,27 @@ h1 {
     width: 20em;
     padding: 3em;
 }
-
-#cargar {
+#contboton {
     display: flex;
-    gap: 7em;
-    justify-content: center;
     margin-top: 2em;
+    justify-content: center;
 }
 
+#calcularfrecuencias {
+    color: white;
+    background-color: black;
+    width: 10em;
+    height: 2em;
+    border-radius: 1em;
+}
+
+#botontexto {
+    color: white;
+    background-color: black;
+    width: 10em;
+    height: 2em;
+    border-radius: 1em;
+}
 img {
     height: 5em;
     width: 5em;
@@ -43,13 +62,21 @@ img {
     color: white;
 }
 
-#resultados {
-    display: flex;
-    gap: 7em;
-    justify-content: center;
-}
-
 h2 {
     text-align: center;
     margin-top: 2em;
+}
+
+#resultados {
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#algoritmos {
+        display: flex;
+        gap: 7em;
+        justify-content: center;
+        margin-top: 2em;
 }
