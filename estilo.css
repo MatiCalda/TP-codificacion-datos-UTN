@@ -1,3 +1,4 @@
+
 * {
     font-family: 'Poppins', sans-serif;
 }
@@ -13,29 +14,29 @@ h1 {
     margin-top: 2em;
 }
 
+#cargartexto, #archivotexto {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid black;
+    border-radius: 2em;
+    padding: 3em;
+}
+
 #cargartexto {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid black;
-    border-radius: 2em;
     width: 10em;
-    padding: 3em;
 }
+
 #archivotexto {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid black;
-    border-radius: 2em;
     width: 20em;
-    padding: 3em;
 }
+
 #contboton {
     display: flex;
     margin-top: 2em;
     justify-content: center;
 }
 
-#calcularfrecuencias {
+#calcularfrecuencias, #botontexto {
     color: white;
     background-color: black;
     width: 10em;
@@ -43,13 +44,6 @@ h1 {
     border-radius: 1em;
 }
 
-#botontexto {
-    color: white;
-    background-color: black;
-    width: 10em;
-    height: 2em;
-    border-radius: 1em;
-}
 img {
     height: 5em;
     width: 5em;
@@ -75,8 +69,18 @@ h2 {
 }
 
 #algoritmos {
-        display: flex;
-        gap: 7em;
-        justify-content: center;
-        margin-top: 2em;
+    display: flex;
+    gap: 7em;
+    justify-content: center;
+    margin-top: 2em;
+}
+
+table {
+    border-collapse: collapse;
+    margin-top: 1em;
+}
+
+table, th, td {
+    border: 1px solid #444;
+    padding: 8px 12px;
 }
