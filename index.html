@@ -33,22 +33,22 @@
         <button id="calcularfrecuencias" onclick="calcularFrecuencias()">Calcular</button>
 
         <div id="frecuencias"></div>
-        <canvas id="grafico-frecuencias"></canvas>
+        <canvas id="grafico-frecuencias" style="max-width: 40em; max-height: 20em;"></canvas>
         <div id="tabla-simbolos"></div>
-        <canvas id="grafico-codigos"></canvas>
+        <canvas id="grafico-codigos" style="max-width: 40em; max-height: 20em;"></canvas>
 
         <div id="algoritmos">
-            <div>
+            <!-- <div>
                 <h4>Codificación Huffman</h4>
                 <p>Tasa de compresión: <span id="tasaHuffman"></span></p>
                 <p>Eficiencia: <span id="eficienciaHuffman"></span></p>
                 <p>Longitud promedio de Código: <span id="longitudHuffman"></span></p>
-            </div>
+            </div> !-->
             <div>
                 <h4>Codificación Shannon-Fano</h4>
-                <p>Tasa de compresión: <span id="tasaSF"></span></p>
-                <p>Eficiencia: <span id="eficienciaSF"></span></p>
                 <p>Longitud promedio de Código: <span id="longitudSF"></span></p>
+                <p>Entropia del mensaje: <span id="entropiaSF"></span> bits/símbolo </p>
+                <p>Eficiencia: <span id="eficienciaSF"></span></p>
             </div>
         </div>
     </div>

@@ -84,3 +84,7 @@ table, th, td {
     border: 1px solid #444;
     padding: 8px 12px;
 }
+
+#grafico-frecuencias {
+    width: 2em;
+}

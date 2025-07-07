@@ -17,6 +17,7 @@ function cargarTexto() {
     }
 }
 
+//chatgpt
 function calcularFrecuencias() {
     if (!textoActual) {
         alert("Por favor, cargue un texto antes de calcular las frecuencias.");
@@ -36,24 +37,51 @@ function calcularFrecuencias() {
     mostrarTablaCodigos(codigosHuffman, 'tabla-simbolos');
     graficarLongitudes(codigosHuffman);
 
-    const mensajeHuffman = codificarTexto(textoActual, codigosHuffman);
-    const tasaH = (textoActual.length * 8 / mensajeHuffman.length).toFixed(2);
-    const efH = (tasaH / Math.log2(Object.keys(frecuencias).length)).toFixed(2);
-    const longH = calcularLongitudPromedio(codigosHuffman, frecuencias).toFixed(2);
-
-    document.getElementById("tasaHuffman").textContent = tasaH;
-    document.getElementById("eficienciaHuffman").textContent = efH;
-    document.getElementById("longitudHuffman").textContent = longH;
-
     const codigosSF = construirCodigosShannonFano(frecuencias);
     const mensajeSF = codificarTexto(textoActual, codigosSF);
     const tasaSF = (textoActual.length * 8 / mensajeSF.length).toFixed(2);
-    const efSF = (tasaSF / Math.log2(Object.keys(frecuencias).length)).toFixed(2);
-    const longSF = calcularLongitudPromedio(codigosSF, frecuencias).toFixed(2);
 
+    // Calcular la entropía
+    const entropia = calcularEntropia(frecuencias);
+
+    // Calcular longitud promedio para Shannon-Fano
+    const longSF = calcularLongitudPromedio(codigosSF, frecuencias);
+    
+    // Calcular eficiencia
+    const efSF = (entropia / longSF).toFixed(2);
+
+    // Mostrar resultados
+    document.getElementById("entropiaSF").textContent = entropia;
     document.getElementById("tasaSF").textContent = tasaSF;
     document.getElementById("eficienciaSF").textContent = efSF;
     document.getElementById("longitudSF").textContent = longSF;
+}
+
+function calcularLongitudPromedio(codigos, frecuencias) {
+    const total = Object.values(frecuencias).reduce((a, b) => a + b, 0);
+    let longitudPromedio = 0;
+
+    for (const simbolo in codigos) {
+        const prob = frecuencias[simbolo] / total;
+        const longitud = codigos[simbolo].length;
+        longitudPromedio += prob * longitud;
+    }
+
+    return longitudPromedio; // No usamos .toFixed() aquí, ya que queremos el valor numérico
+}
+
+function calcularEntropia(frecuencias) {
+    const total = Object.values(frecuencias).reduce((a, b) => a + b, 0);
+    let entropia = 0;
+
+    for (const freq of Object.values(frecuencias)) {
+        const p = freq / total;
+        if (p > 0) {
+            entropia += p * Math.log2(1 / p);
+        }
+    }
+
+    return entropia; // Lo devolvés con 4 decimales
 }
 
 function mostrarFrecuencias(freq) {
@@ -138,33 +166,38 @@ function generarCodigos(nodo, pref = '', codigos = {}) {
 function construirCodigosShannonFano(frec) {
     const simbolos = Object.entries(frec).map(([simbolo, frecuencia]) => ({ simbolo, frecuencia }));
     simbolos.sort((a, b) => b.frecuencia - a.frecuencia);
+    
     const codigos = {};
     dividir(simbolos, codigos);
+    
     return codigos;
 }
 
 function dividir(simbolos, codigos, pref = '') {
+    // Caso base: cuando sólo queda un símbolo, asignamos el código
     if (simbolos.length === 1) {
         codigos[simbolos[0].simbolo] = pref;
         return;
     }
+
+    // Calcular el total de frecuencias
     let total = simbolos.reduce((s, v) => s + v.frecuencia, 0);
-    let acum = 0, i = 0;
-    while (i < simbolos.length && acum < total / 2) {
+    let acum = 0;
+    let i = 0;
+
+    // Buscar el punto de corte, donde las frecuencias de ambas mitades sean lo más equilibradas posible
+    while (i < simbolos.length && acum + simbolos[i].frecuencia <= total / 2) {
         acum += simbolos[i].frecuencia;
         i++;
     }
+
+    // Dividir en dos grupos y continuar la recursión
     dividir(simbolos.slice(0, i), codigos, pref + '0');
     dividir(simbolos.slice(i), codigos, pref + '1');
 }
 
 function codificarTexto(texto, codigos) {
     return texto.split('').map(c => codigos[c]).join('');
-}
-
-function calcularLongitudPromedio(codigos, frec) {
-    const total = Object.values(frec).reduce((a, b) => a + b, 0);
-    return Object.entries(codigos).reduce((s, [simb, cod]) => s + cod.length * frec[simb], 0) / total;
 }
 
 function mostrarTablaCodigos(codigos, elementoId) {
