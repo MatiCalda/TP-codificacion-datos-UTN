@@ -2,6 +2,8 @@ let textoActual = "";
 let graficoFrecuencias = null;
 let graficoCodigos = null;
 
+
+// Carga deL texto ingresado, ya sea por texto o un archivo
 function cargarTexto() {
     const textoDirecto = document.getElementById('textoIng').value;
     const archivo = document.getElementById('file').files[0];
@@ -34,12 +36,10 @@ function calcularFrecuencias() {
 
     const arbolHuffman = construirArbolHuffman(frecuencias);
     const codigosHuffman = generarCodigos(arbolHuffman);
-    mostrarTablaCodigos(codigosHuffman, 'tabla-simbolos');
-    graficarLongitudes(codigosHuffman);
 
     const codigosSF = construirCodigosShannonFano(frecuencias);
-    const mensajeSF = codificarTexto(textoActual, codigosSF);
-    const tasaSF = (textoActual.length * 8 / mensajeSF.length).toFixed(2);
+    mostrarTablaCodigos(codigosSF, frecuencias);
+    graficarLongitudes(codigosHuffman);
 
     // Calcular la entropía
     const entropia = calcularEntropia(frecuencias);
@@ -48,13 +48,20 @@ function calcularFrecuencias() {
     const longSF = calcularLongitudPromedio(codigosSF, frecuencias);
     
     // Calcular eficiencia
-    const efSF = (entropia / longSF).toFixed(2);
+    const efSF = ((entropia / longSF)  * 100).toFixed(3);
 
     // Mostrar resultados
     document.getElementById("entropiaSF").textContent = entropia;
-    document.getElementById("tasaSF").textContent = tasaSF;
+    //document.getElementById("tasaSF").textContent = tasaSF;
     document.getElementById("eficienciaSF").textContent = efSF;
     document.getElementById("longitudSF").textContent = longSF;
+
+    console.log("Texto actual:", textoActual);
+    console.log("Codigos SF:", codigosSF);
+    console.log("Mensaje SF:", mensajeSF);
+    console.log("Entropía:", entropia);
+    console.log("Longitud promedio:", longSF);
+    console.log("Eficiencia:", efSF);
 }
 
 function calcularLongitudPromedio(codigos, frecuencias) {
@@ -143,6 +150,84 @@ function graficarLongitudes(codigos) {
     });
 }
 
+function construirCodigosShannonFano(frecuencias) {
+    // Convertir a lista de objetos
+    const simbolos = Object.entries(frecuencias).map(([simbolo, frecuencia]) => ({
+        simbolo,
+        frecuencia
+    }));
+
+    // Ordenar de mayor a menor frecuencia
+    simbolos.sort((a, b) => b.frecuencia - a.frecuencia);
+
+    // Detectar el símbolo más frecuente (para asegurarnos que reciba '0')
+    const simboloMasFrecuente = simbolos[0].simbolo;
+
+    const codigos = {};
+    dividir(simbolos, codigos, '', simboloMasFrecuente); // pasamos símbolo más frecuente
+    return codigos;
+}
+
+function dividir(simbolos, codigos, pref = '', simboloMasFrecuente) {
+    if (simbolos.length === 1) {
+        codigos[simbolos[0].simbolo] = pref;
+        return;
+    }
+
+    let mejorDiferencia = Infinity;
+    let mejorI = 1;
+
+    for (let i = 1; i < simbolos.length; i++) {
+        const grupo1 = simbolos.slice(0, i);
+        const grupo2 = simbolos.slice(i);
+        const suma1 = grupo1.reduce((s, x) => s + x.frecuencia, 0);
+        const suma2 = grupo2.reduce((s, x) => s + x.frecuencia, 0);
+        const diferencia = Math.abs(suma1 - suma2);
+
+        if (diferencia < mejorDiferencia) {
+            mejorDiferencia = diferencia;
+            mejorI = i;
+        }
+    }
+
+    let grupo1 = simbolos.slice(0, mejorI);
+    let grupo2 = simbolos.slice(mejorI);
+
+    // 📌 Asegurarse que el grupo con el símbolo más frecuente reciba '0'
+    const grupo1TieneMasFrecuente = grupo1.some(s => s.simbolo === simboloMasFrecuente);
+    const grupo2TieneMasFrecuente = grupo2.some(s => s.simbolo === simboloMasFrecuente);
+
+    if (grupo2TieneMasFrecuente) {
+        [grupo1, grupo2] = [grupo2, grupo1]; // invertimos si está en el segundo grupo
+    }
+
+    dividir(grupo1, codigos, pref + '0', simboloMasFrecuente);
+    dividir(grupo2, codigos, pref + '1', simboloMasFrecuente);
+}
+
+
+function mostrarTablaCodigos(codigos, frecuencias) {
+    const contenedor = document.getElementById("tabla-codigos");
+    contenedor.innerHTML = '<h3>Tabla de Códigos</h3>';
+    
+    const tabla = document.createElement('table');
+    tabla.innerHTML = '<tr><th>Símbolo</th><th>Código</th><th>Longitud</th>';
+
+    // Ordenar los símbolos por frecuencia descendente
+    const simbolosOrdenados = Object.keys(codigos).sort((a, b) => frecuencias[b] - frecuencias[a]);
+
+    for (const simbolo of simbolosOrdenados) {
+        const codigo = codigos[simbolo];
+        const frecuencia = frecuencias[simbolo];
+        const fila = document.createElement('tr');
+        fila.innerHTML = `<td>${simbolo}</td><td>${codigo}</td><td>${codigo.length}</td>`;
+        tabla.appendChild(fila);
+    }
+
+    contenedor.appendChild(tabla);
+}
+
+
 function construirArbolHuffman(frec) {
     const nodos = Object.entries(frec).map(([s, f]) => ({ simbolo: s, frecuencia: f, izq: null, der: null }));
     while (nodos.length > 1) {
@@ -153,6 +238,7 @@ function construirArbolHuffman(frec) {
     return nodos[0];
 }
 
+
 function generarCodigos(nodo, pref = '', codigos = {}) {
     if (!nodo.izq && !nodo.der) {
         codigos[nodo.simbolo] = pref;
@@ -161,54 +247,4 @@ function generarCodigos(nodo, pref = '', codigos = {}) {
         generarCodigos(nodo.der, pref + '1', codigos);
     }
     return codigos;
-}
-
-function construirCodigosShannonFano(frec) {
-    const simbolos = Object.entries(frec).map(([simbolo, frecuencia]) => ({ simbolo, frecuencia }));
-    simbolos.sort((a, b) => b.frecuencia - a.frecuencia);
-    
-    const codigos = {};
-    dividir(simbolos, codigos);
-    
-    return codigos;
-}
-
-function dividir(simbolos, codigos, pref = '') {
-    // Caso base: cuando sólo queda un símbolo, asignamos el código
-    if (simbolos.length === 1) {
-        codigos[simbolos[0].simbolo] = pref;
-        return;
-    }
-
-    // Calcular el total de frecuencias
-    let total = simbolos.reduce((s, v) => s + v.frecuencia, 0);
-    let acum = 0;
-    let i = 0;
-
-    // Buscar el punto de corte, donde las frecuencias de ambas mitades sean lo más equilibradas posible
-    while (i < simbolos.length && acum + simbolos[i].frecuencia <= total / 2) {
-        acum += simbolos[i].frecuencia;
-        i++;
-    }
-
-    // Dividir en dos grupos y continuar la recursión
-    dividir(simbolos.slice(0, i), codigos, pref + '0');
-    dividir(simbolos.slice(i), codigos, pref + '1');
-}
-
-function codificarTexto(texto, codigos) {
-    return texto.split('').map(c => codigos[c]).join('');
-}
-
-function mostrarTablaCodigos(codigos, elementoId) {
-    const contenedor = document.getElementById(elementoId);
-    contenedor.innerHTML = '<h3>Tabla de Códigos</h3>';
-    const tabla = document.createElement('table');
-    tabla.innerHTML = '<tr><th>Símbolo</th><th>Código</th><th>Longitud</th></tr>';
-    for (const [simbolo, codigo] of Object.entries(codigos)) {
-        const fila = document.createElement('tr');
-        fila.innerHTML = `<td>${simbolo}</td><td>${codigo}</td><td>${codigo.length}</td>`;
-        tabla.appendChild(fila);
-    }
-    contenedor.appendChild(tabla);
 }

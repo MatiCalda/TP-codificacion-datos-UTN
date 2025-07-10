@@ -88,3 +88,13 @@ table, th, td {
 #grafico-frecuencias {
     width: 2em;
 }
+
+#contenidofrecuencias {
+    display: flex;
+    gap: 7em;
+}
+
+#contenidoshannonfano {
+    display: flex;
+    gap: 7em;
+}
