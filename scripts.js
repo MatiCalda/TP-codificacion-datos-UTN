@@ -55,13 +55,8 @@ function calcularFrecuencias() {
     //document.getElementById("tasaSF").textContent = tasaSF;
     document.getElementById("eficienciaSF").textContent = efSF;
     document.getElementById("longitudSF").textContent = longSF;
+    mostrarArbolShannonFano(codigosSF);
 
-    console.log("Texto actual:", textoActual);
-    console.log("Codigos SF:", codigosSF);
-    console.log("Mensaje SF:", mensajeSF);
-    console.log("Entropía:", entropia);
-    console.log("Longitud promedio:", longSF);
-    console.log("Eficiencia:", efSF);
 }
 
 function calcularLongitudPromedio(codigos, frecuencias) {
@@ -120,7 +115,19 @@ function graficarFrecuencias(frecuencias) {
         options: {
             responsive: true,
             scales: {
-                y: { beginAtZero: true }
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Símbolos'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Frecuencia'
+                    }
+                }
             }
         }
     });
@@ -144,7 +151,19 @@ function graficarLongitudes(codigos) {
         options: {
             responsive: true,
             scales: {
-                y: { beginAtZero: true }
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Símbolos'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Longitud del Código (bits)'
+                    }
+                }
             }
         }
     });
@@ -209,18 +228,20 @@ function dividir(simbolos, codigos, pref = '', simboloMasFrecuente) {
 function mostrarTablaCodigos(codigos, frecuencias) {
     const contenedor = document.getElementById("tabla-codigos");
     contenedor.innerHTML = '<h3>Tabla de Códigos</h3>';
-    
-    const tabla = document.createElement('table');
-    tabla.innerHTML = '<tr><th>Símbolo</th><th>Código</th><th>Longitud</th>';
 
-    // Ordenar los símbolos por frecuencia descendente
+    const tabla = document.createElement('table');
+    tabla.innerHTML = '<tr><th>Símbolo</th><th>Probabilidad</th><th>Código</th><th>Longitud</th></tr>';
+
     const simbolosOrdenados = Object.keys(codigos).sort((a, b) => frecuencias[b] - frecuencias[a]);
+    const total = Object.values(frecuencias).reduce((a, b) => a + b, 0);
 
     for (const simbolo of simbolosOrdenados) {
         const codigo = codigos[simbolo];
         const frecuencia = frecuencias[simbolo];
+        const probabilidad = (frecuencia / total).toFixed(2);
+
         const fila = document.createElement('tr');
-        fila.innerHTML = `<td>${simbolo}</td><td>${codigo}</td><td>${codigo.length}</td>`;
+        fila.innerHTML = `<td>${simbolo}</td><td>${probabilidad}</td><td>${codigo}</td><td>${codigo.length}</td>`;
         tabla.appendChild(fila);
     }
 
@@ -247,4 +268,56 @@ function generarCodigos(nodo, pref = '', codigos = {}) {
         generarCodigos(nodo.der, pref + '1', codigos);
     }
     return codigos;
+}
+
+function construirArbolVisualSF(codigos) {
+    let nodes = [{ id: 0, label: "COMIENZO" }];
+    let edges = [];
+    let nodeId = 1;
+
+    for (const [simbolo, codigo] of Object.entries(codigos)) {
+        let currentNode = 0;
+
+        for (let i = 0; i < codigo.length; i++) {
+            const bit = codigo[i];
+            const label = `bit ${i + 1} = "${bit}"`;
+
+            // Buscar si ya existe una arista con ese bit desde currentNode
+            let existente = edges.find(e => e.from === currentNode && e.label === label);
+            if (existente) {
+                currentNode = existente.to;
+            } else {
+                const nuevoNodo = nodeId++;
+                nodes.push({ id: nuevoNodo, label: i === codigo.length - 1 ? simbolo : "" });
+                edges.push({ from: currentNode, to: nuevoNodo, label });
+                currentNode = nuevoNodo;
+            }
+        }
+    }
+
+    return { nodes, edges };
+}
+
+function mostrarArbolShannonFano(codigos) {
+    const contenedor = document.getElementById('arbol-shannonfano');
+    contenedor.innerHTML = ''; // limpiar
+
+    const datos = construirArbolVisualSF(codigos);
+
+    const container = document.createElement('div');
+    container.style.height = '500px';
+    contenedor.appendChild(container);
+
+    const network = new vis.Network(container, {
+        nodes: new vis.DataSet(datos.nodes),
+        edges: new vis.DataSet(datos.edges)
+    }, {
+        layout: { hierarchical: { direction: "UD", sortMethod: "directed" } },
+        edges: { arrows: "to" },
+        nodes: {
+            shape: 'box',
+            color: { background: '#e3f2fd', border: '#2196f3' },
+            font: { color: '#0d47a1', face: 'Arial' }
+        }
+    });
 }

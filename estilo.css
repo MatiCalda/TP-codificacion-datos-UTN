@@ -98,3 +98,19 @@ table, th, td {
     display: flex;
     gap: 7em;
 }
+
+#arbol-shannonfano-container {
+    text-align: center;
+    margin: auto;
+    max-width: 800px;
+}
+
+#arbol-shannonfano {
+    height: 500px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+}
+
+#arbol-shannonfano-container h3 {
+    text-align: center;
+}

@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="estilo.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="scripts.js" defer></script>
+    <script src="https://unpkg.com/vis-network@9.1.2/dist/vis-network.min.js"></script>
+    <link href="https://unpkg.com/vis-network@9.1.2/styles/vis-network.min.css" rel="stylesheet"/>
 </head>
 
 <body>
@@ -43,12 +45,6 @@
         </div>
 
         <div id="algoritmos">
-            <!-- <div>
-                <h4>Codificación Huffman</h4>
-                <p>Tasa de compresión: <span id="tasaHuffman"></span></p>
-                <p>Eficiencia: <span id="eficienciaHuffman"></span></p>
-                <p>Longitud promedio de Código: <span id="longitudHuffman"></span></p>
-            </div> !-->
             <div>
                 <h4>Codificación Shannon-Fano</h4>
                 <p>Longitud promedio de Código: <span id="longitudSF"> </span> </p>
@@ -56,7 +52,12 @@
                 <p>Eficiencia: <span id="eficienciaSF"> </span> % </p>
             </div>
         </div>
-    </div>
+        <br>
+
+        <div id="arbol-shannonfano-container">
+            <h3> Algoritmo de Huffman </h3>
+            <div id="arbol-shannonfano"></div>
+        </div>
 </body>
 
 </html>
